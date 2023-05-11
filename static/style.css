@@ -1,0 +1,8 @@
+body {
+    background-color: #242424;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono&display=swap');
+.NotoSansMono {
+    font-family: 'Noto Sans Mono', monospace;
+}
