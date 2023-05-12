@@ -1,4 +1,4 @@
-import json, sys
+import json, sys, time, os
 
 class Build:
     def __init__(self):
@@ -47,10 +47,46 @@ class Main:
         pass
 
     def build(self):
-        if ("-w" in self.options) or ("--watchdog" in self.options):
-            pass
-        else:
-            Build()
+        Build()
+
+        if ("-w" in self.options) or ("--watchdog" in self.options): # watchdog
+            # clear terminal
+            if os.name == "nt": # Windows
+                os.system("cls")
+            else: # macOS / Linux
+                os.system("clear")
+
+
+            print("Pylog watchdog build (manage.py) \n")
+
+            file_last_modified = {}
+            folder_paths = ["templates/", "static/", "media/"]
+
+            try:
+                while True:
+                    for folder_path in folder_paths:
+                        for root, _, files in os.walk(folder_path):
+                            for file in files:
+                                file_path = os.path.join(root, file)
+                                last_modified = os.path.getmtime(file_path)
+
+                                if file_path in file_last_modified:
+                                    if last_modified != file_last_modified[file_path]:
+                                        file_last_modified[file_path] = last_modified
+
+                                        print(f"Modified File: {file_path}")
+                                        Build()
+                                        
+                                        break
+                                else:
+                                    file_last_modified[file_path] = last_modified
+
+                        time.sleep(0.5) 
+            except KeyboardInterrupt:
+                os._exit(0)
+
+        
+
 
 if __name__ == "__main__":
     Main()
