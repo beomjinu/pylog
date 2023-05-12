@@ -1,4 +1,4 @@
-import argparse, json
+import json, sys
 
 class Build:
     def __init__(self):
@@ -31,16 +31,26 @@ class Build:
         
         return indexHtml
     
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("command")
+class Main:
+    def __init__(self):
+        self.command = sys.argv[1]
+        self.options = sys.argv[1:]
 
-    args = parser.parse_args()
+        if self.command in ["help", "h", ""]:
+            self._help()
+        
+        elif self.command in ["build", "b"]:
+            self.build()
 
-    if args.command == "build":
-        build = Build()
-    else:
-        raise ValueError('Unknown command: {}'.format(args.command))
+
+    def _help(self):
+        pass
+
+    def build(self):
+        if ("-w" in self.options) or ("--watchdog" in self.options):
+            pass
+        else:
+            Build()
 
 if __name__ == "__main__":
-    main()
+    Main()
