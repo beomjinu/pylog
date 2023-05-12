@@ -74,14 +74,13 @@ class Main:
                                     if last_modified != file_last_modified[file_path]:
                                         file_last_modified[file_path] = last_modified
 
-                                        print(f"Modified File: {file_path}")
                                         Build()
                                         
                                         break
                                 else:
                                     file_last_modified[file_path] = last_modified
 
-                        time.sleep(0.5) 
+                        time.sleep(0.5)
             except KeyboardInterrupt:
                 os._exit(0)
 
