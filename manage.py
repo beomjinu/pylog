@@ -1,12 +1,15 @@
-import json, sys, time, os
+import json, sys, time, os, markdown
 
 class Build:
     def __init__(self):
         self.baseTemplate = self.readFile("templates/base.html")
         self.config = json.loads(self.readFile("config.json"))
 
-        self.writeFile("index.html", self.createIndexHtml())
+        for folder in os.listdir("post"):
+            self.writeFile(f"post/{folder}/index.html", self.createPostHtml(folder))
 
+        # self.writeFile("index.html", self.createIndexHtml())
+        
     def readFile(self, filepath: str):
         with open(filepath, "r") as file:
             return file.read()
@@ -31,6 +34,26 @@ class Build:
         
         return indexHtml
     
+    def createPostHtml(self, folder: str):
+        template = self.readFile("templates/post.html")
+        file = self.readFile(f"post/{folder}/post.md")
+
+        config, post = file.split("---", 1)
+        config = json.loads("{" + config + "}")
+
+        vars = {
+            "title": config["title"],
+            "img": config["img"],
+            "post": markdown.markdown(post),
+            "date": f"{folder[:4]}.{folder[4:6]}.{folder[6:8]}",
+            "folder": folder
+        }; vars.update(self.config)
+
+        postHtml = self.replaceVars(self.replaceVars(self.baseTemplate, {"template": template}), vars)
+        
+        return postHtml
+
+
 class Main:
     def __init__(self):
         self.command = sys.argv[1]
@@ -41,7 +64,6 @@ class Main:
         
         elif self.command in ["build", "b"]:
             self.build()
-
 
     def _help(self):
         pass
@@ -60,7 +82,7 @@ class Main:
             print("Pylog watchdog build (manage.py) \n")
 
             file_last_modified = {}
-            folder_paths = ["templates/", "static/", "media/"]
+            folder_paths = ["templates/", "static/", "media/", "post/"]
 
             try:
                 while True:
@@ -83,9 +105,6 @@ class Main:
                         time.sleep(0.5)
             except KeyboardInterrupt:
                 os._exit(0)
-
-        
-
 
 if __name__ == "__main__":
     Main()
